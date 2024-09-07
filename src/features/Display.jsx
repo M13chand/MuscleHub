@@ -2,10 +2,10 @@ import { PiPlayCircleFill } from "react-icons/pi";
 
 const Display = () => {
   return (
-    <div className="container mx-auto grid grid-cols-2 gap-10  ">
-      <div className="mt-[57px]">
-        <h1 className="text-4xl">Join The World </h1>
-        <h1 className="text-4xl">Of Fitness. </h1>
+    <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-10 p-4">
+      <div className="mt-10 md:mt-[57px]">
+        <h1 className="text-3xl md:text-4xl">Join The World</h1>
+        <h1 className="text-3xl md:text-4xl">Of Fitness.</h1>
         <p className="text-sm py-5">
           Our aim is to bring more people into fitness so that every individual,
           family, society, and the whole nation benefits.
@@ -20,31 +20,35 @@ const Display = () => {
           </button>
         </div>
         {/* Information about the experience */}
-        <div className="flex text-center gap-10 px-3 mt-14 ">
+        <div className="flex justify-center md:justify-start text-center gap-5 md:gap-10 px-3 mt-10 md:mt-14">
           <div>
-            <h1 className="text-yellow-500 font-bold ">7</h1>
-            <p>Years</p>
-            <p>Experience</p>
+            <h1 className="text-yellow-500 font-bold text-xl md:text-2xl">7</h1>
+            <p className="text-sm md:text-base">Years</p>
+            <p className="text-sm md:text-base">Experience</p>
           </div>
 
           <div>
-            <h1 className="text-yellow-500 font-bold">25k+</h1>
-            <p>Happy</p>
-            <p>Customers</p>
+            <h1 className="text-yellow-500 font-bold text-xl md:text-2xl">
+              25k+
+            </h1>
+            <p className="text-sm md:text-base">Happy</p>
+            <p className="text-sm md:text-base">Customers</p>
           </div>
 
           <div>
-            <h1 className="text-yellow-500 font-bold">95</h1>
-            <p>Gym</p>
-            <p>Trainers</p>
+            <h1 className="text-yellow-500 font-bold text-xl md:text-2xl">
+              95
+            </h1>
+            <p className="text-sm md:text-base">Gym</p>
+            <p className="text-sm md:text-base">Trainers</p>
           </div>
         </div>
       </div>
 
-      {/* display Image  */}
-      <div className="mt-[7px]">
+      {/* Display Image */}
+      <div className="mt-5 md:mt-[7px] flex justify-center md:justify-end">
         <img
-          className="h-[500px] "
+          className="h-auto max-h-[500px] w-full object-cover md:h-[500px]"
           src="/src/assets/Display page.PNG"
           alt="display-image"
         />

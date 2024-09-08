@@ -2,8 +2,8 @@ import { Link } from "react-router-dom";
 
 const Header = () => {
   return (
-    <div className="">
-      <nav className=" flex items-center justify-between  px-3 bg-black text-white">
+    <div>
+      <nav className=" flex items-center justify-between ">
         <div className="h-[80px] w-[80px]">
           <img className="w-[100%]" src="/src/assets/logo.png" alt="logo" />
         </div>

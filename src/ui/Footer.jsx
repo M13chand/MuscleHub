@@ -2,8 +2,8 @@ import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <footer className="bg-black text-white p-8">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+    <div className=" container mx-auto p-8">
+      <div className=" grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Section: About Musclehub */}
         <div>
           <img
@@ -90,7 +90,7 @@ const Footer = () => {
       <div className="text-center mt-8 text-sm">
         © 2024 Musclehub. All Rights Reserved.
       </div>
-    </footer>
+    </div>
   );
 };
 

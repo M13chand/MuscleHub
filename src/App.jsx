@@ -4,8 +4,8 @@ import Contact from "./features/Contact";
 import About from "./features/About";
 import Home from "./features/Home";
 import Reviews from "./features/Reviews";
-import Services from "./features/Services";
 import PageNotFound from "./features/PageNotFound";
+import ServicePage from "./features/ServicePage";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -30,8 +30,8 @@ const App = () => {
           element: <Reviews />,
         },
         {
-          path: "/services",
-          element: <Services />,
+          path: "/servicepage",
+          element: <ServicePage />,
         },
         {
           path: "*",

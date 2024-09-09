@@ -1,19 +1,21 @@
-import Contact from "./Contact";
 import Display from "./Display";
 import Facilities from "./Facilities";
 import Reviews from "./Reviews";
-import Services from "./Services";
+
+import ContactSection from "./shared/ContactSection";
+import Services from "./shared/Services";
+
 import Trainer from "./Trainer";
 
 const Home = () => {
   return (
     <div>
       <Display />
-      <Services />
+      <Services isCompact={true} />
       <Reviews />
       <Facilities />
       <Trainer />
-      <Contact />
+      <ContactSection />
     </div>
   );
 };

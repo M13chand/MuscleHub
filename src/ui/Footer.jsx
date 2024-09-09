@@ -2,14 +2,15 @@ import { FaFacebookF, FaInstagram, FaTwitter, FaYoutube } from "react-icons/fa";
 
 const Footer = () => {
   return (
-    <div className=" container mx-auto p-8">
+    <div className=" container mx-auto  ">
+      <hr className="border-t-2 border-yellow-500 pb-7" />
       <div className=" grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Left Section: About Musclehub */}
         <div>
           <img
-            src="/src/assets/logo.png"
+            src="/src/assets/logo1.png"
             alt="Musclehub Logo"
-            className="mb-4 h-16"
+            className="mb-4 h-20"
           />
           <p className="text-sm">
             Welcome to Musclehub, your ultimate fitness destination. We offer
@@ -87,7 +88,7 @@ const Footer = () => {
           <p>Email: info@musclehub.com</p>
         </div>
       </div>
-      <div className="text-center mt-8 text-sm">
+      <div className="text-center mt-8 text-sm p">
         © 2024 Musclehub. All Rights Reserved.
       </div>
     </div>

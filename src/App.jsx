@@ -6,6 +6,8 @@ import Home from "./features/Home";
 import Reviews from "./features/Reviews";
 import PageNotFound from "./features/PageNotFound";
 import ServicePage from "./features/ServicePage";
+import RegisterPage from "./features/auth/Register";
+import LoginPage from "./features/auth/Login";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -32,6 +34,14 @@ const App = () => {
         {
           path: "/servicepage",
           element: <ServicePage />,
+        },
+        {
+          path: "/register",
+          element: <RegisterPage />,
+        },
+        {
+          path: "/login",
+          element: <LoginPage />,
         },
         {
           path: "*",

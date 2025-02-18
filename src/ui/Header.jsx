@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import Login from "./../features/auth/Login";
 
 const Header = () => {
   return (
@@ -24,6 +25,9 @@ const Header = () => {
           </Link>
           <Link className="hover:text-yellow-400" to="/contact">
             Contact
+          </Link>
+          <Link className="hover:text-yellow-400" to="/register">
+            Register{" "}
           </Link>
           <Link className="hover:text-yellow-400" to="/Login">
             Login{" "}

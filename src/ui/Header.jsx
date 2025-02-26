@@ -28,9 +28,6 @@ const Header = () => {
           <Link className="hover:text-yellow-400" to="/register">
             Register{" "}
           </Link>
-          <Link className="hover:text-yellow-400" to="/editcourse">
-            editcourse{" "}
-          </Link>
         </div>
       </nav>
     </div>

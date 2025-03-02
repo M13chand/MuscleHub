@@ -12,6 +12,8 @@ import LoginPage from "./features/auth/Login";
 import TrainerRoutes from "./routes/TrainerRoutes";
 
 import EnrollmentRoutes from "./routes/EnrollmentRoutes";
+import ReviewRoutes from "./routes/ReviewRoutes";
+import Dashboard from "./pages/dashboard/Dashboard";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -26,6 +28,7 @@ const App = () => {
         { path: "servicepage", element: <ServicePage /> },
         { path: "register", element: <RegisterPage /> },
         { path: "login", element: <LoginPage /> },
+        { path: "dashboard", element: <Dashboard /> },
 
         // ✅ Implement CourseRoutes inside "courses/*"
         {
@@ -39,6 +42,10 @@ const App = () => {
         {
           path: "enrollments",
           children: [...EnrollmentRoutes()],
+        },
+        {
+          path: "reviews",
+          children: [...ReviewRoutes()],
         },
 
         { path: "*", element: <PageNotFound /> },

@@ -1,62 +1,45 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { logout, setCredentials } from "../../app/authSlice";
+// src/features/auth/authApiSlice.js
+import { apiSlice } from "../../app/apiSlice";
+import { setCredentials, logout } from "../../app/authSlice";
 
-export const authApiSlice = createApi({
-  reducerPath: "authApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/api/auth",
-    credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth?.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
-    // ✅ Register User
-    registerUser: builder.mutation({
-      query: (userData) => ({
-        url: "/register",
-        method: "POST",
-        body: userData,
-        headers: { "Content-Type": "application/json" },
-      }),
-    }),
-
-    // ✅ Login User
     loginUser: builder.mutation({
       query: (credentials) => ({
-        url: "/login",
+        url: "users/login", // ✅ Correct route
         method: "POST",
         body: credentials,
-        headers: { "Content-Type": "application/json" },
       }),
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           const { data } = await queryFulfilled;
-          // Store token in Redux store
-          dispatch(setCredentials(data));
-        } catch (error) {
-          console.error("Login failed:", error);
+          console.log("🔹 API Login Response:", data);
+          dispatch(setCredentials(data)); // ✅ Save token & user in Redux
+        } catch (err) {
+          console.error("❌ Login error:", err);
         }
       },
     }),
 
-    // ✅ Logout User
+    registerUser: builder.mutation({
+      query: (userData) => ({
+        url: "users/register", // ✅ Correct route
+        method: "POST",
+        body: userData,
+      }),
+    }),
+
     logoutUser: builder.mutation({
       query: () => ({
-        url: "/logout",
+        url: "users/logout", // ✅ Correct route
         method: "POST",
       }),
-      async onQueryStarted(args, { dispatch, queryFulfilled }) {
+      async onQueryStarted(arg, { dispatch, queryFulfilled }) {
         try {
           await queryFulfilled;
-          // Remove auth state on logout
-          dispatch(logout());
-        } catch (error) {
-          console.error("Logout failed:", error);
+          dispatch(logout()); // ✅ Clear Redux state & localStorage
+        } catch (err) {
+          console.error("❌ Logout error:", err);
         }
       },
     }),
@@ -64,7 +47,7 @@ export const authApiSlice = createApi({
 });
 
 export const {
-  useRegisterUserMutation,
   useLoginUserMutation,
+  useRegisterUserMutation,
   useLogoutUserMutation,
 } = authApiSlice;

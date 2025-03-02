@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 // Initial state for authentication
 const initialState = {
   user: null,
-  accessToken: null,
+  token: null,
 };
 
 // Create the authSlice
@@ -14,12 +14,12 @@ const authSlice = createSlice({
     // Action to set user credentials (token and user info)
     setCredentials: (state, action) => {
       state.user = action.payload.user;
-      state.accessToken = action.payload.accessToken;
+      state.token = action.payload.token;
     },
     // Action to log out the user
     logout: (state) => {
       state.user = null;
-      state.accessToken = null;
+      state.token = null;
     },
   },
 });

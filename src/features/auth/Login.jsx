@@ -2,10 +2,16 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useLoginUserMutation } from "./authApiSlice";
-import { Link } from "react-router-dom";
+import { useLoginUserMutation } from "../../features/auth/authApiSlice";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../app/authSlice";
+import { Link, useNavigate } from "react-router-dom";
 
 const LoginPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Invalid email address")
@@ -15,15 +21,17 @@ const LoginPage = () => {
       .required("Password is required"),
   });
 
-  const [loginUser, { isLoading }] = useLoginUserMutation();
-
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      await loginUser(values).unwrap();
+      const response = await loginUser(values).unwrap();
+      console.log("🔹 API Login Response:", response);
+
+      dispatch(setCredentials(response)); // ✅ Store user in Redux
       alert("User logged in successfully!");
-      window.location.href = "/dashboard"; // Adjust the redirect as needed
+      navigate("/dashboard"); // ✅ Redirect user after login
     } catch (err) {
-      setErrors({ general: err.message || "Login failed" });
+      console.error("❌ Login error:", err);
+      setErrors({ general: err?.data?.message || "Login failed" });
     } finally {
       setSubmitting(false);
     }
@@ -42,7 +50,6 @@ const LoginPage = () => {
           onSubmit={handleSubmit}>
           {({ handleChange, handleBlur, values, errors, isSubmitting }) => (
             <Form className="space-y-4">
-              {/* Email Field */}
               <div>
                 <label
                   htmlFor="email"
@@ -65,7 +72,6 @@ const LoginPage = () => {
                 />
               </div>
 
-              {/* Password Field */}
               <div>
                 <label
                   htmlFor="password"
@@ -88,14 +94,12 @@ const LoginPage = () => {
                 />
               </div>
 
-              {/* General Error Message */}
               {errors.general && (
                 <div className="text-red-500 text-sm mt-3">
                   {errors.general}
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting || isLoading}

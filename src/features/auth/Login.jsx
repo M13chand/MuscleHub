@@ -1,4 +1,3 @@
-// src/pages/auth/LoginPage.jsx
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
@@ -6,12 +5,14 @@ import { useLoginUserMutation } from "../../features/auth/authApiSlice";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../app/authSlice";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loginUser, { isLoading }] = useLoginUserMutation();
 
+  // Validation Schema
   const validationSchema = Yup.object({
     email: Yup.string()
       .email("Invalid email address")
@@ -21,17 +22,35 @@ const LoginPage = () => {
       .required("Password is required"),
   });
 
+  // Handle Login Submission
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
       const response = await loginUser(values).unwrap();
       console.log("🔹 API Login Response:", response);
 
-      dispatch(setCredentials(response)); // ✅ Store user in Redux
-      alert("User logged in successfully!");
-      navigate("/dashboard"); // ✅ Redirect user after login
+      if (!response || !response.token) {
+        throw new Error("Invalid login response from server");
+      }
+
+      // ✅ Store credentials in Redux
+      dispatch(setCredentials(response));
+
+      // ✅ Save to Local Storage
+      localStorage.setItem("token", response.token);
+      localStorage.setItem("user", JSON.stringify(response));
+
+      // ✅ Show different notifications for user & admin
+      if (response.isAdmin) {
+        toast.success("Admin logged in successfully! 🎉");
+        navigate("/admin/dashboard"); // Redirect Admin
+      } else {
+        toast.success("User logged in successfully! 🎉");
+        navigate("/dashboard"); // Redirect User
+      }
     } catch (err) {
       console.error("❌ Login error:", err);
       setErrors({ general: err?.data?.message || "Login failed" });
+      toast.error("Login failed. Please check your credentials.");
     } finally {
       setSubmitting(false);
     }
@@ -50,19 +69,17 @@ const LoginPage = () => {
           onSubmit={handleSubmit}>
           {({ handleChange, handleBlur, values, errors, isSubmitting }) => (
             <Form className="space-y-4">
+              {/* Email Field */}
               <div>
                 <label
                   htmlFor="email"
                   className="block font-medium text-yellow-500">
                   Email
                 </label>
-                <input
+                <Field
                   type="email"
                   id="email"
                   name="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
                   className="w-full p-2 border border-gray-600 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white"
                 />
                 <ErrorMessage
@@ -72,19 +89,17 @@ const LoginPage = () => {
                 />
               </div>
 
+              {/* Password Field */}
               <div>
                 <label
                   htmlFor="password"
                   className="block font-medium text-yellow-500">
                   Password
                 </label>
-                <input
+                <Field
                   type="password"
                   id="password"
                   name="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
                   className="w-full p-2 border border-gray-600 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white"
                 />
                 <ErrorMessage
@@ -94,12 +109,14 @@ const LoginPage = () => {
                 />
               </div>
 
+              {/* General Error Message */}
               {errors.general && (
                 <div className="text-red-500 text-sm mt-3">
                   {errors.general}
                 </div>
               )}
 
+              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting || isLoading}
@@ -110,6 +127,7 @@ const LoginPage = () => {
           )}
         </Formik>
 
+        {/* Register Link */}
         <p className="text-center text-sm text-gray-400 mt-4">
           Don't have an account?{" "}
           <Link to="/register" className="text-yellow-500 hover:underline">

@@ -1,31 +1,39 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// Initial state for authentication
 const initialState = {
   user: null,
-  token: null,
+  token: localStorage.getItem("token") || null,
+  isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
 };
 
-// Create the authSlice
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState, // ✅ Use the initial state here
   reducers: {
-    // Action to set user credentials (token and user info)
     setCredentials: (state, action) => {
-      state.user = action.payload.user;
+      state.user = {
+        username: action.payload.username,
+        email: action.payload.email,
+        isAdmin: action.payload.isAdmin,
+      };
       state.token = action.payload.token;
+      state.isAdmin = action.payload.isAdmin || false;
+
+      console.log("The state is", state);
+      // Save to localStorage
+      localStorage.setItem("token", action.payload.token);
+      localStorage.setItem("isAdmin", JSON.stringify(action.payload.isAdmin));
     },
-    // Action to log out the user
     logout: (state) => {
+      console.log("👋 Logging Out");
       state.user = null;
       state.token = null;
+      state.isAdmin = false;
+      localStorage.removeItem("token");
+      localStorage.removeItem("isAdmin");
     },
   },
 });
 
-// Export the actions from authSlice
 export const { setCredentials, logout } = authSlice.actions;
-
-// Export the reducer to be added to the store
 export default authSlice.reducer;

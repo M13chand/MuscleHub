@@ -3,9 +3,12 @@ import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useRegisterUserMutation } from "./authApiSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const RegisterPage = () => {
+  const navigate = useNavigate();
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+
   const validationSchema = Yup.object({
     username: Yup.string()
       .min(3, "Username must be at least 3 characters")
@@ -18,15 +21,15 @@ const RegisterPage = () => {
       .required("Password is required"),
   });
 
-  const [registerUser, { isLoading }] = useRegisterUserMutation();
-
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
-      await registerUser(values).unwrap();
+      const response = await registerUser(values).unwrap();
+      console.log("Registration successful:", response);
       alert("User registered successfully!");
-      window.location.href = "/login";
+      navigate("/login");
     } catch (err) {
-      setErrors({ general: err.message || "Registration failed" });
+      console.error("Registration error:", err);
+      setErrors({ general: err?.data?.message || "Registration failed" });
     } finally {
       setSubmitting(false);
     }
@@ -43,7 +46,7 @@ const RegisterPage = () => {
           initialValues={{ username: "", email: "", password: "" }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}>
-          {({ handleChange, handleBlur, values, errors, isSubmitting }) => (
+          {({ errors, isSubmitting }) => (
             <Form className="space-y-4">
               {/* Username Field */}
               <div>
@@ -52,13 +55,10 @@ const RegisterPage = () => {
                   className="block font-medium text-yellow-500">
                   Username
                 </label>
-                <input
+                <Field
                   type="text"
                   id="username"
                   name="username"
-                  value={values.username}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
                   className="w-full p-2 border border-gray-600 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white"
                 />
                 <ErrorMessage
@@ -75,13 +75,10 @@ const RegisterPage = () => {
                   className="block font-medium text-yellow-500">
                   Email
                 </label>
-                <input
+                <Field
                   type="email"
                   id="email"
                   name="email"
-                  value={values.email}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
                   className="w-full p-2 border border-gray-600 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white"
                 />
                 <ErrorMessage
@@ -98,13 +95,10 @@ const RegisterPage = () => {
                   className="block font-medium text-yellow-500">
                   Password
                 </label>
-                <input
+                <Field
                   type="password"
                   id="password"
                   name="password"
-                  value={values.password}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
                   className="w-full p-2 border border-gray-600 rounded-lg bg-gray-700 focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white"
                 />
                 <ErrorMessage

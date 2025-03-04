@@ -1,19 +1,23 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import RootLayout from "./ui/RootLayout";
 import Home from "./features/Home";
+
+import LoginPage from "./features/auth/Login";
+import RegisterPage from "./features/auth/Register";
+
 import Contact from "./features/Contact";
 import About from "./features/About";
 import Reviews from "./features/Reviews";
 import PageNotFound from "./features/PageNotFound";
 import ServicePage from "./features/ServicePage";
-import RegisterPage from "./features/auth/Register";
-import CourseRoutes from "./routes/CourseRoutes"; // ✅ Import CourseRoutes
-import LoginPage from "./features/auth/Login";
-import TrainerRoutes from "./routes/TrainerRoutes";
 
+import CourseRoutes from "./routes/CourseRoutes";
+import TrainerRoutes from "./routes/TrainerRoutes";
 import EnrollmentRoutes from "./routes/EnrollmentRoutes";
 import ReviewRoutes from "./routes/ReviewRoutes";
-import Dashboard from "./pages/dashboard/Dashboard";
+
+import UserDashboard from "./pages/dashboard/UserDashboard ";
+import AdminDashboard from "./pages/dashboard/AdminDashboard ";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -28,9 +32,10 @@ const App = () => {
         { path: "servicepage", element: <ServicePage /> },
         { path: "register", element: <RegisterPage /> },
         { path: "login", element: <LoginPage /> },
-        { path: "dashboard", element: <Dashboard /> },
 
-        // ✅ Implement CourseRoutes inside "courses/*"
+        { path: "dashboard", element: <UserDashboard /> },
+        { path: "admin/dashboard", element: <AdminDashboard /> },
+
         {
           path: "courses",
           children: [...CourseRoutes()],

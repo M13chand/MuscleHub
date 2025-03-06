@@ -11,13 +11,13 @@ import Reviews from "./features/Reviews";
 import PageNotFound from "./features/PageNotFound";
 import ServicePage from "./features/ServicePage";
 
-import CourseRoutes from "./routes/CourseRoutes";
-import TrainerRoutes from "./routes/TrainerRoutes";
-import EnrollmentRoutes from "./routes/EnrollmentRoutes";
-import ReviewRoutes from "./routes/ReviewRoutes";
+import CourseRoutes from "./routes/courseRoutes";
+import TrainerRoutes from "./routes/trainerRoutes";
+import EnrollmentRoutes from "./routes/enrollmentRoutes";
+import ReviewRoutes from "./routes/reviewRoutes";
 
-import UserDashboard from "./pages/dashboard/UserDashboard ";
-import AdminDashboard from "./pages/dashboard/AdminDashboard ";
+import UserDashboard from "./pages/user/Dashboard";
+import AdminDashboard from "./pages/admin/AdminDashboard ";
 
 const App = () => {
   const router = createBrowserRouter([

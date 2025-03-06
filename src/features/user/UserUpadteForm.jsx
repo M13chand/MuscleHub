@@ -8,7 +8,7 @@ import {
   useUpdateUserMutation,
 } from "../../api/userApiSlice";
 
-const UserUpdateForm = () => {
+const UserEditForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ const UserUpdateForm = () => {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Update User</h1>
+      <h1 className="text-2xl font-bold mb-4">Edit User</h1>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -140,7 +140,7 @@ const UserUpdateForm = () => {
           <button
             type="submit"
             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-            Update User
+            Edit User
           </button>
         </Form>
       </Formik>
@@ -148,4 +148,4 @@ const UserUpdateForm = () => {
   );
 };
 
-export default UserUpdateForm;
+export default UserEditForm;

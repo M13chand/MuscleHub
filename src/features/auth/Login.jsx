@@ -45,7 +45,7 @@ const LoginPage = () => {
         navigate("/admin/dashboard"); // Redirect Admin
       } else {
         toast.success("User logged in successfully! 🎉");
-        navigate("/dashboard"); // Redirect User
+        navigate("/user/dashboard"); // Redirect User
       }
     } catch (err) {
       console.error("❌ Login error:", err);

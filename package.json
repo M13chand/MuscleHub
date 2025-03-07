@@ -19,7 +19,7 @@
     "react-redux": "^9.2.0",
     "react-router": "^6.26.1",
     "react-router-dom": "^6.26.1",
-    "react-toastify": "^11.0.5",
+"react-toastify": "^9.0.0",
     "yup": "^1.6.1"
   },
   "devDependencies": {

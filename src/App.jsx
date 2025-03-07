@@ -16,8 +16,11 @@ import TrainerRoutes from "./routes/trainerRoutes";
 import EnrollmentRoutes from "./routes/enrollmentRoutes";
 import ReviewRoutes from "./routes/reviewRoutes";
 
-import UserDashboard from "./pages/user/Dashboard";
-import AdminDashboard from "./pages/admin/AdminDashboard ";
+import UserDashboard from "./pages/user/UserDashboard";
+// import AdminDashboard from "./pages/admin/AdminDashboard ";
+
+import userDashboardRoutes from "./routes/userDashboardRoutes";
+// import adminDashboardRoutes from "./routes/adminDashboardRoutes";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -33,9 +36,19 @@ const App = () => {
         { path: "register", element: <RegisterPage /> },
         { path: "login", element: <LoginPage /> },
 
-        { path: "dashboard", element: <UserDashboard /> },
-        { path: "admin/dashboard", element: <AdminDashboard /> },
+        // { path: "dashboard", element: <UserDashboard /> },
+        // { path: "admin/dashboard", element: <AdminDashboard /> },
 
+        {
+          path: "user/dashboard",
+          element: <UserDashboard />,
+          children: [...userDashboardRoutes],
+        },
+        // {
+        //   path: "admin/dashboard",
+        //   element: <AdminDashboard />,
+        //   children: [...adminDashboardRoutes],
+        // },
         {
           path: "courses",
           children: [...CourseRoutes()],

@@ -1,7 +1,6 @@
 import React from "react";
 
 const MyCourses = () => {
-  // You can fetch the user's enrolled courses from the backend or Redux state
   const enrolledCourses = [
     { id: 1, name: "Yoga", trainer: "John Doe", status: "Active" },
     { id: 2, name: "Pilates", trainer: "Jane Smith", status: "Completed" },

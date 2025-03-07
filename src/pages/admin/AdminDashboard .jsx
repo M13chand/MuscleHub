@@ -10,7 +10,7 @@ const AdminDashboard = () => {
 
   // Redirect non-admin users
   if (!user?.isAdmin) {
-    navigate("/");
+    navigate("/admin/dashboard");
     return null;
   }
 

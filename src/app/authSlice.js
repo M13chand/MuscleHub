@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user")) || null, // Add this
   token: localStorage.getItem("token") || null,
   isAdmin: JSON.parse(localStorage.getItem("isAdmin")) || false,
 };
@@ -11,18 +11,15 @@ const authSlice = createSlice({
   initialState, // ✅ Use the initial state here
   reducers: {
     setCredentials: (state, action) => {
-      state.user = {
-        username: action.payload.username,
-        email: action.payload.email,
-        isAdmin: action.payload.isAdmin,
-      };
-      state.token = action.payload.token;
-      state.isAdmin = action.payload.isAdmin || false;
+      const { username, email, isAdmin, token } = action.payload;
+      state.user = { username, email, isAdmin };
+      state.token = token;
+      state.isAdmin = isAdmin || false;
 
-      console.log("The state is", state);
       // Save to localStorage
-      localStorage.setItem("token", action.payload.token);
-      localStorage.setItem("isAdmin", JSON.stringify(action.payload.isAdmin));
+      localStorage.setItem("token", token);
+      localStorage.setItem("isAdmin", JSON.stringify(isAdmin));
+      localStorage.setItem("user", JSON.stringify({ username, email, isAdmin })); // Save user data in localStorage
     },
     logout: (state) => {
       console.log("👋 Logging Out");
@@ -31,6 +28,7 @@ const authSlice = createSlice({
       state.isAdmin = false;
       localStorage.removeItem("token");
       localStorage.removeItem("isAdmin");
+      localStorage.removeItem("user"); // Remove user data from localStorage
     },
   },
 });

@@ -1,7 +1,7 @@
 // src/components/users/UserDetail.jsx
 import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useGetUserByIdQuery } from "../../api/userApiSlice";
+import { useGetUserByIdQuery } from "./userApiSlice";
 
 const UserDetail = () => {
   const { id } = useParams();

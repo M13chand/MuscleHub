@@ -1,9 +1,11 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { logout } from "../../app/authSlice"; // Import logout action
 
 const AdminDashboard = () => {
   const { user } = useSelector((state) => state.auth);
+  const dispatch = useDispatch(); // Hook for dispatching actions
   const navigate = useNavigate();
 
   console.log("🔹 AdminDashboard - Full User Object:", user);
@@ -14,6 +16,12 @@ const AdminDashboard = () => {
     return null;
   }
 
+  // Handle Logout
+  const handleLogout = () => {
+    dispatch(logout()); // Dispatch the logout action
+    navigate("/login"); // Redirect to login page after logout
+  };
+
   return (
     <div className="flex min-h-screen bg-gray-900 text-white">
       {/* Sidebar */}
@@ -21,7 +29,7 @@ const AdminDashboard = () => {
         <h1 className="text-2xl font-bold text-yellow-500 mb-6">Admin Panel</h1>
         <nav className="space-y-3">
           <NavLink
-            to="/users"
+            to="users"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
@@ -32,7 +40,7 @@ const AdminDashboard = () => {
             Users
           </NavLink>
           <NavLink
-            to="/admin/trainers"
+            to="/trainers"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
@@ -43,7 +51,7 @@ const AdminDashboard = () => {
             Trainers
           </NavLink>
           <NavLink
-            to="/courses"
+            to="courses"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
@@ -54,7 +62,7 @@ const AdminDashboard = () => {
             Courses
           </NavLink>
           <NavLink
-            to="/enrollments"
+            to="enrollments"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
@@ -65,6 +73,13 @@ const AdminDashboard = () => {
             Enrollments
           </NavLink>
         </nav>
+
+        {/* Logout Button */}
+        <button
+          onClick={handleLogout}
+          className="mt-6 w-full p-3 rounded-lg bg-red-500 hover:bg-red-600 text-white">
+          Logout
+        </button>
       </aside>
 
       {/* Content Section */}

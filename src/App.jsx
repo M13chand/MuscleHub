@@ -11,16 +11,18 @@ import Reviews from "./features/Reviews";
 import PageNotFound from "./features/PageNotFound";
 import ServicePage from "./features/ServicePage";
 
-import CourseRoutes from "./routes/courseRoutes";
-import TrainerRoutes from "./routes/trainerRoutes";
-import EnrollmentRoutes from "./routes/enrollmentRoutes";
-import ReviewRoutes from "./routes/reviewRoutes";
+// import CourseRoutes from "./routes/courseRoutes";
+// import TrainerRoutes from "./routes/trainerRoutes";
+// import EnrollmentRoutes from "./routes/enrollmentRoutes";
+// import ReviewRoutes from "./routes/reviewRoutes";
 
 import UserDashboard from "./pages/user/UserDashboard";
-// import AdminDashboard from "./pages/admin/AdminDashboard ";
 
-import userDashboardRoutes from "./routes/userDashboardRoutes";
-// import adminDashboardRoutes from "./routes/adminDashboardRoutes";
+import UserRoutes from "./routes/userDashboardRoutes";
+import AdminRoutes from "./routes/adminDashboardRoutes";
+import AdminDashboard from "./pages/admin/AdminDashboard ";
+import UserPage from "./pages/admin/UserPage";
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -41,30 +43,43 @@ const App = () => {
 
         {
           path: "user/dashboard",
-          element: <UserDashboard />,
-          children: [...userDashboardRoutes],
+          element: (
+            <ProtectedRoute>
+              <UserDashboard />
+            </ProtectedRoute>
+          ),
+
+          children: [...UserRoutes()],
         },
+        {
+          path: "admin/dashboard",
+          element: (
+            <ProtectedRoute>
+              <AdminDashboard />
+            </ProtectedRoute>
+          ),
+          children: [
+            ...AdminRoutes(),
+            { path: "users", element: <UserPage /> },
+          ],
+        },
+
         // {
-        //   path: "admin/dashboard",
-        //   element: <AdminDashboard />,
-        //   children: [...adminDashboardRoutes],
+        //   path: "courses",
+        //   children: [...CourseRoutes()],
         // },
-        {
-          path: "courses",
-          children: [...CourseRoutes()],
-        },
-        {
-          path: "trainers",
-          children: [...TrainerRoutes()],
-        },
-        {
-          path: "enrollments",
-          children: [...EnrollmentRoutes()],
-        },
-        {
-          path: "reviews",
-          children: [...ReviewRoutes()],
-        },
+        // {
+        //   path: "trainers",
+        //   children: [...TrainerRoutes()],
+        // },
+        // {
+        //   path: "enrollments",
+        //   children: [...EnrollmentRoutes()],
+        // },
+        // {
+        //   path: "reviews",
+        //   children: [...ReviewRoutes()],
+        // },
 
         { path: "*", element: <PageNotFound /> },
       ],

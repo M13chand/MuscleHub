@@ -1,51 +1,48 @@
 // src/features/courses/courseApiSlice.js
 
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import apiSlice from "../../app/apiSlice";
 
-export const courseApiSlice = createApi({
-  reducerPath: 'courseApi',
-  baseQuery: fetchBaseQuery({ baseUrl: 'http://localhost:5000/api/courses' }), // Adjust to your backend URL
-  tagTypes: ['Course'],
+export const courseApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch all courses
     getCourses: builder.query({
-      query: () => '/', // Fetch all courses
-      providesTags: ['Course'],
+      query: () => "/courses", // Fetch all courses
+      providesTags: ["Course"],
     }),
 
     // Fetch a specific course by ID
     getCourseById: builder.query({
-      query: (id) => `/${id}`, // Fetch a specific course by ID
-      providesTags: ['Course'],
+      query: (id) => `/courses/${id}`, // Fetch a specific course by ID
+      providesTags: ["Course"],
     }),
 
     // Add a new course
     addCourse: builder.mutation({
       query: (newCourse) => ({
-        url: '/add',
-        method: 'POST',
+        url: "courses/add",
+        method: "POST",
         body: newCourse,
       }),
-      invalidatesTags: ['Course'],
+      invalidatesTags: ["Course"],
     }),
 
     // Update a course
     updateCourse: builder.mutation({
       query: ({ id, updatedCourse }) => ({
-        url: `/${id}`,
-        method: 'PUT',
+        url: `courses/${id}`,
+        method: "PUT",
         body: updatedCourse,
       }),
-      invalidatesTags: ['Course'],
+      invalidatesTags: ["Course"],
     }),
 
     // Delete a course
     deleteCourse: builder.mutation({
       query: (id) => ({
-        url: `/${id}`,
-        method: 'DELETE',
+        url: `courses/${id}`,
+        method: "DELETE",
       }),
-      invalidatesTags: ['Course'],
+      invalidatesTags: ["Course"],
     }),
   }),
 });

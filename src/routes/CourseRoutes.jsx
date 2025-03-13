@@ -2,6 +2,7 @@
 import AddCourseForm from "../features/courses/AddCourseForm";
 import EditCourseForm from "../features/courses/EditCourseForm";
 import CourseList from "../features/courses/CoursesList";
+import CourseDetail from "../features/courses/CourseDetail";
 
 const CourseRoutes = () => [
   {
@@ -11,6 +12,10 @@ const CourseRoutes = () => [
   {
     path: "edit/:id",
     element: <EditCourseForm />,
+  },
+  {
+    path: ":id",
+    element: <CourseDetail />,
   },
   {
     path: "list",

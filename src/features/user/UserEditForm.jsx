@@ -3,10 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { useParams, useNavigate } from "react-router-dom";
-import {
-  useGetUserByIdQuery,
-  useUpdateUserMutation,
-} from "../../api/userApiSlice";
+import { useGetUserByIdQuery, useUpdateUserMutation } from "./userApiSlice";
 
 const UserEditForm = () => {
   const { id } = useParams();

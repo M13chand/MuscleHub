@@ -1,59 +1,78 @@
+// src/pages/admin/UserPage.jsx
 import React, { useState } from "react";
 import {
   useGetAllUsersQuery,
   useDeleteUserMutation,
-} from "../../features/user/userApiSlice"; // Adjust import path
-import UserList from "../../features/user/UserList"; // Assuming you already have this component
-import UserDetail from "../../features/user/UserDetail"; // Assuming you already have this component
-import UserEditForm from "../../features/user/UserEditForm"; // Assuming you already have this component
+} from "../../features/user/userApiSlice";
+import UserList from "../../features/user/UserList";
+import UserDetail from "../../features/user/UserDetail";
+import { Outlet, useNavigate } from "react-router-dom"; // useNavigate added
 
 const UserPage = () => {
   const { data: users, error, isLoading } = useGetAllUsersQuery();
   const [deleteUser] = useDeleteUserMutation();
-  const [selectedUser, setSelectedUser] = useState(null); // To manage selected user for view or edit
-  const [isEditing, setIsEditing] = useState(false); // Flag for edit mode
+  const navigate = useNavigate(); // for programmatic navigation
 
-  const handleDelete = (id) => {
+  const [selectedUser, setSelectedUser] = useState(null);
+
+  const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this user?")) {
-      deleteUser(id);
+      try {
+        await deleteUser(id).unwrap();
+        setSelectedUser(null); // clear selection if deleted
+      } catch (err) {
+        console.error("Failed to delete user:", err);
+      }
     }
   };
 
   const handleEdit = (user) => {
-    setSelectedUser(user);
-    setIsEditing(true); // Switch to edit mode when a user is selected for editing
+    navigate(`edit/${user.id}`); // Navigate to /users/edit/:id
   };
 
-  if (isLoading) return <p>Loading users...</p>;
+  const handleView = (user) => {
+    setSelectedUser(user);
+  };
+
+  if (isLoading) {
+    return (
+      <div className="text-yellow-500 text-center py-4">Loading users...</div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500 text-center py-4">Error loading users.</div>
+    );
+  }
 
   return (
     <div className="bg-gray-900 text-white p-6 rounded-lg">
-      <h2 className="text-2xl font-bold text-yellow-500 mb-4">
+      <h2 className="text-2xl font-bold text-yellow-500 mb-6">
         Users Management
       </h2>
 
-      {/* Show User List */}
-      <UserList
-        users={users}
-        onEdit={handleEdit} // Trigger edit when a user is selected
-        onDelete={handleDelete} // Trigger delete when a user is deleted
-      />
+      {users?.length > 0 ? (
+        <UserList
+          users={users}
+          onEdit={handleEdit}
+          onView={handleView}
+          onDelete={handleDelete}
+        />
+      ) : (
+        <p className="text-gray-400">No users found.</p>
+      )}
 
-      {/* Show User Details or Edit Form */}
-      {selectedUser && !isEditing && (
+      {selectedUser && (
         <UserDetail
           user={selectedUser}
-          onClose={() => setSelectedUser(null)} // Close details view
-          onEdit={() => setIsEditing(true)} // Switch to edit mode
+          onEdit={() => handleEdit(selectedUser)}
+          onClose={() => setSelectedUser(null)}
         />
       )}
 
-      {isEditing && selectedUser && (
-        <UserEditForm
-          user={selectedUser}
-          onClose={() => setIsEditing(false)} // Close edit form
-        />
-      )}
+      {/* This renders the UserEditForm based on route */}
+      <Outlet />
     </div>
   );
 };

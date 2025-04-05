@@ -1,20 +1,12 @@
-// src/components/users/UserUpdateForm.jsx
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Formik, Field, Form, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import { useParams, useNavigate } from "react-router-dom";
-import {
-  useGetUserByIdQuery,
-  useUpdateUserMutation,
-} from "../../features/user/userApiSlice";
+import { useNavigate } from "react-router-dom";
+import { useAddUserMutation } from "./userApiSlice";
 
-const UserEditForm = () => {
-  const { id } = useParams(); // Get the user ID from the URL
+const UserAddForm = () => {
   const navigate = useNavigate();
-
-  // Fetch existing user data using Redux Toolkit Query
-  const { data: user, isLoading, error } = useGetUserByIdQuery(id);
-  const [updateUser] = useUpdateUserMutation();
+  const [addUser] = useAddUserMutation();
 
   const [initialValues, setInitialValues] = useState({
     username: "",
@@ -23,19 +15,7 @@ const UserEditForm = () => {
     isAdmin: false,
   });
 
-  // Set the initial values once the user data is fetched
-  useEffect(() => {
-    if (user) {
-      setInitialValues({
-        username: user.username,
-        email: user.email,
-        password: "", // Password should be reset when editing
-        isAdmin: user.isAdmin,
-      });
-    }
-  }, [user]);
-
-  // Yup validation schema for the form
+  // Yup validation schema
   const validationSchema = Yup.object({
     username: Yup.string()
       .required("Username is required")
@@ -49,21 +29,16 @@ const UserEditForm = () => {
 
   const handleSubmit = async (values) => {
     try {
-      // Use the updateUser mutation to send the updated data to the backend
-      await updateUser({ id, ...values }).unwrap();
-      navigate("/users"); // Redirect to the user list after updating
+      await addUser(values);
+      navigate("/users");
     } catch (error) {
-      console.error("Error updating user", error);
+      console.error("Error adding user", error);
     }
   };
 
-  // Loading and error handling
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching user details.</p>;
-
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit User</h1>
+      <h1 className="text-2xl font-bold mb-4">Add New User</h1>
       <Formik
         initialValues={initialValues}
         validationSchema={validationSchema}
@@ -142,8 +117,8 @@ const UserEditForm = () => {
 
           <button
             type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-            Edit User
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+            Add User
           </button>
         </Form>
       </Formik>
@@ -151,4 +126,4 @@ const UserEditForm = () => {
   );
 };
 
-export default UserEditForm;
+export default UserAddForm;

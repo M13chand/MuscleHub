@@ -4,13 +4,13 @@ import CourseList from "../features/courses/CoursesList";
 import CourseDetail from "../features/courses/CourseDetail";
 import EnrollmentList from "../features/enrollments/EnrollmentList";
 import UserList from "../features/user/UserList";
-
 import UserEditForm from "../features/user/UserEditForm";
-import UserDetail from "../features/user/UserDetail";
+import UserPage from "../pages/admin/UserPage"; // Import the UserPage component
 import TrainerList from "../features/trainers/TrainerList";
 import TrainerAddForm from "../features/trainers/TrainerAddForm";
 import TrainerEditForm from "../features/trainers/TrainerEditForm";
 import ReviewList from "../features/reviews/ReviewsList"; // Admin can view reviews but not add
+import UserAddForm from "../features/user/UserAddForm";
 
 const AdminRoutes = () => [
   // Courses Routes
@@ -37,19 +37,15 @@ const AdminRoutes = () => [
     element: <EnrollmentList />,
   },
 
-  // Users Routes
+  // Users Routes (Nested Routes under /admin/dashboard/users)
   {
-    path: "users/list",
-    element: <UserList />,
-  },
-
-  {
-    path: "users/edit/:id",
-    element: <UserEditForm />,
-  },
-  {
-    path: "users/:id",
-    element: <UserDetail />,
+    path: "users",
+    element: <UserPage />, // UserPage will handle the routing for listing, editing, and adding users
+    children: [
+      { path: "list", element: <UserList /> }, // This will render the list of users
+      { path: "add", element: <UserAddForm /> }, // This will render the add user form
+      { path: "edit/:id", element: <UserEditForm /> }, // This will render the edit user form
+    ],
   },
 
   // Trainers Routes

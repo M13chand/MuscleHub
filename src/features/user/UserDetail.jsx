@@ -1,61 +1,40 @@
-// src/components/users/UserDetail.jsx
-import React, { useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { useGetUserByIdQuery } from "./userApiSlice";
+// src/features/user/UserDetail.jsx
+import React from "react";
 
-const UserDetail = () => {
-  const { id } = useParams();
-  const navigate = useNavigate();
-
-  const { data: user, isLoading, error } = useGetUserByIdQuery(id);
-
-  useEffect(() => {
-    if (error) {
-      navigate("/users"); // Redirect if user not found
-    }
-  }, [error, navigate]);
-
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching user details</p>;
+const UserDetail = ({ user, onClose, onEdit }) => {
+  if (!user) return null;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">User Details</h1>
-      <div className="bg-white shadow-lg rounded-lg p-6">
-        <div className="mb-4">
-          <strong className="text-sm font-medium text-gray-700">
-            Username:{" "}
-          </strong>
-          <p className="text-gray-900">{user.username}</p>
-        </div>
+    <div className="bg-gray-800 text-white p-6 rounded-lg mt-6 shadow-md">
+      <h2 className="text-xl font-bold text-yellow-500 mb-4">User Details</h2>
 
-        <div className="mb-4">
-          <strong className="text-sm font-medium text-gray-700">Email: </strong>
-          <p className="text-gray-900">{user.email}</p>
-        </div>
+      <p className="mb-2">
+        <strong>Username:</strong> {user.username}
+      </p>
+      <p className="mb-2">
+        <strong>Email:</strong> {user.email}
+      </p>
+      <p className="mb-2">
+        <strong>Admin:</strong> {user.isAdmin ? "Yes" : "No"}
+      </p>
+      <p className="mb-2">
+        <strong>Created:</strong> {new Date(user.createdAt).toLocaleString()}
+      </p>
+      <p className="mb-4">
+        <strong>Updated:</strong> {new Date(user.updatedAt).toLocaleString()}
+      </p>
 
-        <div className="mb-4">
-          <strong className="text-sm font-medium text-gray-700">Admin: </strong>
-          <p className="text-gray-900">{user.isAdmin ? "Yes" : "No"}</p>
-        </div>
-
-        <div className="mb-4">
-          <strong className="text-sm font-medium text-gray-700">
-            Created At:{" "}
-          </strong>
-          <p className="text-gray-900">
-            {new Date(user.createdAt).toLocaleString()}
-          </p>
-        </div>
-
-        <div className="mb-4">
-          <strong className="text-sm font-medium text-gray-700">
-            Updated At:{" "}
-          </strong>
-          <p className="text-gray-900">
-            {new Date(user.updatedAt).toLocaleString()}
-          </p>
-        </div>
+      <div className="flex gap-4">
+        <button
+          onClick={onEdit}
+          className="bg-green-600 px-4 py-2 rounded hover:bg-green-700">
+          Edit
+        </button>
+        <button
+          onClick={onClose}
+          className="bg-gray-600 px-4 py-2 rounded hover:bg-gray-700">
+          Close
+        </button>
       </div>
     </div>
   );

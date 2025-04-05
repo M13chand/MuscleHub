@@ -29,7 +29,7 @@ const AdminDashboard = () => {
         <h1 className="text-2xl font-bold text-yellow-500 mb-6">Admin Panel</h1>
         <nav className="space-y-3">
           <NavLink
-            to="users"
+            to="users/list"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
@@ -40,7 +40,7 @@ const AdminDashboard = () => {
             Users
           </NavLink>
           <NavLink
-            to="/trainers"
+            to="trainers"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive

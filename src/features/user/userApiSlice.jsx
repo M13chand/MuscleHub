@@ -1,41 +1,48 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { apiSlice } from "../../app/apiSlice"; // Importing the base API slice
 
-export const userApiSlice = createApi({
-  reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "/users",
-    credentials: "include",
-    prepareHeaders: (headers, { getState }) => {
-      const token = getState().auth.accessToken;
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      return headers;
-    },
-  }),
+export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllUsers: builder.query({
-      query: () => "/",
-      providesTags: ["Users"],
+      query: () => "users", // /users endpoint will be appended to baseUrl
+      providesTags: (result) => (result ? [{ type: "User", id: "LIST" }] : []), // Cache list of users with a 'LIST' tag
     }),
     getUserById: builder.query({
-      query: (id) => `/${id}`,
-      providesTags: ["User"],
+      query: (id) => `users/${id}`, // /users/:id endpoint
+      providesTags: (result, error, id) => [
+        { type: "User", id }, // Cache the specific user by ID
+      ],
     }),
     updateUser: builder.mutation({
       query: ({ id, userData }) => ({
-        url: `/${id}`,
+        url: `users/${id}`, // /users/:id endpoint
         method: "PUT",
         body: userData,
       }),
-      invalidatesTags: ["User"],
+      // Invalidate the cache of the user being updated and the user list
+      invalidatesTags: (result, error, { id }) => [
+        { type: "User", id },
+        { type: "User", id: "LIST" },
+      ],
     }),
     deleteUser: builder.mutation({
       query: (id) => ({
-        url: `/${id}`,
+        url: `users/${id}`, // /users/:id endpoint
         method: "DELETE",
       }),
-      invalidatesTags: ["Users"],
+      // Invalidate the cache for the specific user and the user list
+      invalidatesTags: (result, error, id) => [
+        { type: "User", id },
+        { type: "User", id: "LIST" },
+      ],
+    }),
+    addUser: builder.mutation({
+      query: (userData) => ({
+        url: "users/add", // /users/add endpoint
+        method: "POST",
+        body: userData,
+      }),
+      // Invalidate the cache for the user list after adding a new user
+      invalidatesTags: [{ type: "User", id: "LIST" }],
     }),
   }),
 });
@@ -45,4 +52,5 @@ export const {
   useGetUserByIdQuery,
   useUpdateUserMutation,
   useDeleteUserMutation,
+  useAddUserMutation,
 } = userApiSlice;

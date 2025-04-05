@@ -1,23 +1,34 @@
-// src/components/users/UserCard.jsx
+// src/features/user/UserCard.jsx
 import React from "react";
-import { Link } from "react-router-dom";
 
-const UserCard = ({ user }) => {
+const UserCard = ({ user, onView, onEdit, onDelete }) => {
+  if (!user || !user.id) {
+    return <p className="text-red-500">Invalid user data</p>;
+  }
+
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg">
-      <h2 className="text-xl font-semibold">{user.name}</h2>
-      <p className="text-sm text-gray-600">{user.email}</p>
-      <div className="mt-4 flex justify-between">
-        <Link
-          to={`/users/${user.id}`}
-          className="text-blue-500 hover:underline">
-          View Details
-        </Link>
-        <Link
-          to={`/users/${user.id}/edit`}
-          className="text-green-500 hover:underline">
+    <div className="bg-gray-800 text-white p-4 rounded-lg shadow-md hover:shadow-lg transition-transform transform hover:scale-105">
+      <h2 className="text-xl font-semibold text-yellow-500">
+        {user.username?.trim() || "No Name"}
+      </h2>
+      <p className="text-sm text-gray-400">{user.email || "No Email"}</p>
+
+      <div className="mt-4 flex justify-between text-sm">
+        <button
+          onClick={() => onView(user)}
+          className="text-yellow-400 hover:underline">
+          View
+        </button>
+        <button
+          onClick={() => onEdit(user)}
+          className="text-green-400 hover:underline">
           Edit
-        </Link>
+        </button>
+        <button
+          onClick={() => onDelete(user.id)}
+          className="text-red-400 hover:underline">
+          Delete
+        </button>
       </div>
     </div>
   );

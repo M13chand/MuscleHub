@@ -1,72 +1,84 @@
+import CoursesPage from "../pages/admin/CoursesPage";
 import AddCourseForm from "../features/courses/AddCourseForm";
 import EditCourseForm from "../features/courses/EditCourseForm";
-import CourseList from "../features/courses/CoursesList";
-import CourseDetail from "../features/courses/CourseDetail";
+import CourseDetailPage from "../pages/admin/CourseDetailPage";
 import EnrollmentList from "../features/enrollments/EnrollmentList";
 import UserList from "../features/user/UserList";
 import UserEditForm from "../features/user/UserEditForm";
-import UserPage from "../pages/admin/UserPage"; // Import the UserPage component
+import UserPage from "../pages/admin/UserPage";
 import TrainerList from "../features/trainers/TrainerList";
 import TrainerAddForm from "../features/trainers/TrainerAddForm";
 import TrainerEditForm from "../features/trainers/TrainerEditForm";
-import ReviewList from "../features/reviews/ReviewsList"; // Admin can view reviews but not add
-import UserAddForm from "../features/user/UserAddForm";
+import ReviewList from "../features/reviews/ReviewsList";
 
-const AdminRoutes = () => [
-  // Courses Routes
+const adminDashboardRoutes = [
   {
-    path: "courses/add",
-    element: <AddCourseForm />,
-  },
-  {
-    path: "courses/edit/:id",
-    element: <EditCourseForm />,
-  },
-  {
-    path: "courses/:id",
-    element: <CourseDetail />,
-  },
-  {
-    path: "courses/list",
-    element: <CourseList />,
-  },
-
-  // Enrollment Routes
-  {
-    path: "enrollments/list",
-    element: <EnrollmentList />,
-  },
-
-  // Users Routes (Nested Routes under /admin/dashboard/users)
-  {
-    path: "users",
-    element: <UserPage />, // UserPage will handle the routing for listing, editing, and adding users
+    path: "courses",
     children: [
-      { path: "list", element: <UserList /> }, // This will render the list of users
-      { path: "add", element: <UserAddForm /> }, // This will render the add user form
-      { path: "edit/:id", element: <UserEditForm /> }, // This will render the edit user form
+      {
+        index: true,
+        element: <CoursesPage />,
+      },
+      {
+        path: "list",
+        element: <CoursesPage />,
+      },
+      {
+        path: "add",
+        element: <AddCourseForm />,
+      },
+      {
+        path: "edit/:id",
+        element: <EditCourseForm />,
+      },
+      {
+        path: ":id",
+        element: <CourseDetailPage />,
+      },
     ],
   },
-
-  // Trainers Routes
   {
-    path: "trainers/list",
-    element: <TrainerList />,
+    path: "users",
+    children: [
+      {
+        index: true,
+        element: <UserPage />,
+      },
+      {
+        path: "list",
+        element: <UserPage />,
+      },
+      {
+        path: "edit/:id",
+        element: <UserEditForm />,
+      },
+    ],
   },
   {
-    path: "trainers/add",
-    element: <TrainerAddForm />,
+    path: "trainers",
+    children: [
+      {
+        index: true,
+        element: <TrainerList />,
+      },
+      {
+        path: "add",
+        element: <TrainerAddForm />,
+      },
+      {
+        path: "edit/:id",
+        element: <TrainerEditForm />,
+      },
+    ],
   },
   {
-    path: "trainers/edit/:id",
-    element: <TrainerEditForm />,
-  },
-
-  // Reviews Routes (Admins can only view reviews)
-  {
-    path: "reviews/list",
+    path: "reviews",
     element: <ReviewList />,
+  },
+  {
+    path: "enrollments",
+    element: <EnrollmentList />,
   },
 ];
 
-export default AdminRoutes;
+export default adminDashboardRoutes;

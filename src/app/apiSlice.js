@@ -17,6 +17,24 @@ export const apiSlice = createApi({
 
       return headers;
     },
+    // Add logging for requests and responses
+    fetchFn: async (...args) => {
+      console.log("🔄 API Request:", args[0]);
+      try {
+        const response = await fetch(...args);
+        const responseClone = response.clone();
+        try {
+          const data = await responseClone.json();
+          console.log("✅ API Response:", data);
+        } catch (e) {
+          console.log("❌ Could not parse response as JSON");
+        }
+        return response;
+      } catch (error) {
+        console.error("❌ API Error:", error);
+        throw error;
+      }
+    },
   }),
   tagTypes: ['User', 'Course', 'Trainer', 'Enrollment', 'Review'],
   endpoints: () => ({}),

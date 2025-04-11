@@ -1,4 +1,3 @@
-// src/features/user/UserDetail.jsx
 import React from "react";
 
 const UserDetail = ({ user, onClose, onEdit }) => {

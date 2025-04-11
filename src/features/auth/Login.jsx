@@ -26,31 +26,43 @@ const LoginPage = () => {
   const handleSubmit = async (values, { setSubmitting, setErrors }) => {
     try {
       const response = await loginUser(values).unwrap();
-      console.log("🔹 API Login Response:", response);
+      if (response?.token) {
+        dispatch(
+          setCredentials({
+            username: response.username,
+            email: response.email,
+            isAdmin: response.isAdmin,
+            token: response.token,
+          })
+        );
+        localStorage.setItem("token", response.token);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: response.username,
+            email: response.email,
+            isAdmin: response.isAdmin,
+          })
+        );
 
-      if (!response || !response.token) {
-        throw new Error("Invalid login response from server");
-      }
-
-      // ✅ Store credentials in Redux
-      dispatch(setCredentials(response));
-
-      // ✅ Save to Local Storage
-      localStorage.setItem("token", response.token);
-      localStorage.setItem("user", JSON.stringify(response));
-
-      // ✅ Show different notifications for user & admin
-      if (response.isAdmin) {
-        toast.success("Admin logged in successfully! 🎉");
-        navigate("/admin/dashboard"); // Redirect Admin
+        if (response.isAdmin) {
+          toast.success("Admin logged in successfully! 🎉");
+          navigate("/admin/dashboard");
+        } else {
+          toast.success("User logged in successfully! 🎉");
+          navigate("/user/dashboard");
+        }
       } else {
-        toast.success("User logged in successfully! 🎉");
-        navigate("/user/dashboard"); // Redirect User
+        throw new Error("Login failed: Invalid response");
       }
     } catch (err) {
       console.error("❌ Login error:", err);
-      setErrors({ general: err?.data?.message || "Login failed" });
-      toast.error("Login failed. Please check your credentials.");
+      setErrors({
+        general: err.message || "Login failed. Please check your credentials.",
+      });
+      toast.error(
+        err.message || "Login failed. Please check your credentials."
+      );
     } finally {
       setSubmitting(false);
     }
@@ -67,9 +79,8 @@ const LoginPage = () => {
           initialValues={{ email: "", password: "" }}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}>
-          {({ handleChange, handleBlur, values, errors, isSubmitting }) => (
+          {({ values, errors, isSubmitting }) => (
             <Form className="space-y-4">
-              {/* Email Field */}
               <div>
                 <label
                   htmlFor="email"
@@ -89,7 +100,6 @@ const LoginPage = () => {
                 />
               </div>
 
-              {/* Password Field */}
               <div>
                 <label
                   htmlFor="password"
@@ -109,14 +119,12 @@ const LoginPage = () => {
                 />
               </div>
 
-              {/* General Error Message */}
               {errors.general && (
                 <div className="text-red-500 text-sm mt-3">
                   {errors.general}
                 </div>
               )}
 
-              {/* Submit Button */}
               <button
                 type="submit"
                 disabled={isSubmitting || isLoading}
@@ -127,7 +135,6 @@ const LoginPage = () => {
           )}
         </Formik>
 
-        {/* Register Link */}
         <p className="text-center text-sm text-gray-400 mt-4">
           Don't have an account?{" "}
           <Link to="/register" className="text-yellow-500 hover:underline">

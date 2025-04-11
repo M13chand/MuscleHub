@@ -1,26 +1,25 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+// src/features/trainers/trainerApiSlice.js
 
-export const trainerApiSlice = createApi({
-  reducerPath: "trainerApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000/apitrainers" }), // Adjust to backend URL
-  tagTypes: ["Trainer"],
+import apiSlice from "../../app/apiSlice";
+
+export const trainerApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch all trainers
     getTrainers: builder.query({
-      query: () => "/",
+      query: () => "/trainers", // Fetch all trainers
       providesTags: ["Trainer"],
     }),
 
     // Fetch a specific trainer by ID
     getTrainerById: builder.query({
-      query: (id) => `/${id}`,
+      query: (id) => `/trainers/${id}`, // Fetch a specific trainer by ID
       providesTags: ["Trainer"],
     }),
 
     // Add a new trainer
     addTrainer: builder.mutation({
       query: (newTrainer) => ({
-        url: "/add",
+        url: "trainers/add",
         method: "POST",
         body: newTrainer,
       }),
@@ -30,7 +29,7 @@ export const trainerApiSlice = createApi({
     // Update a trainer
     updateTrainer: builder.mutation({
       query: ({ id, updatedTrainer }) => ({
-        url: `/${id}`,
+        url: `trainers/${id}`,
         method: "PUT",
         body: updatedTrainer,
       }),
@@ -40,7 +39,7 @@ export const trainerApiSlice = createApi({
     // Delete a trainer
     deleteTrainer: builder.mutation({
       query: (id) => ({
-        url: `/${id}`,
+        url: `trainers/${id}`,
         method: "DELETE",
       }),
       invalidatesTags: ["Trainer"],

@@ -1,48 +1,67 @@
 // src/features/courses/courseApiSlice.js
 
-import apiSlice from "../../app/apiSlice";
+import { apiSlice } from "../../app/apiSlice";
 
 export const courseApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Fetch all courses
     getCourses: builder.query({
-      query: () => "/courses", // Fetch all courses
-      providesTags: ["Course"],
+      query: () => "/courses",
+      transformResponse: (response) => {
+        // Transform the response to handle MongoDB _id field
+        return response.map((course) => ({
+          ...course,
+          id: course.id || course._id, // Ensure id field exists alongside _id
+          trainerId:
+            course.trainerId || course.trainer?._id || course.trainer?.id,
+          trainerName: course.trainer?.name || "Unknown Trainer",
+        }));
+      },
+      providesTags: (result = []) => [
+        { type: "Course", id: "LIST" },
+        ...result.map(({ id }) => ({ type: "Course", id })),
+      ],
     }),
 
     // Fetch a specific course by ID
     getCourseById: builder.query({
-      query: (id) => `/courses/${id}`, // Fetch a specific course by ID
-      providesTags: ["Course"],
+      query: (id) => `/courses/${id}`,
+      providesTags: (result, error, id) => [{ type: "Course", id }],
     }),
 
     // Add a new course
     addCourse: builder.mutation({
       query: (newCourse) => ({
-        url: "courses/add",
+        url: "/courses/add",
         method: "POST",
         body: newCourse,
       }),
-      invalidatesTags: ["Course"],
+      invalidatesTags: [{ type: "Course", id: "LIST" }],
     }),
 
     // Update a course
     updateCourse: builder.mutation({
       query: ({ id, updatedCourse }) => ({
-        url: `courses/${id}`,
+        url: `/courses/${id}`,
         method: "PUT",
         body: updatedCourse,
       }),
-      invalidatesTags: ["Course"],
+      invalidatesTags: (result, error, { id }) => [
+        { type: "Course", id },
+        { type: "Course", id: "LIST" },
+      ],
     }),
 
     // Delete a course
     deleteCourse: builder.mutation({
       query: (id) => ({
-        url: `courses/${id}`,
+        url: `/courses/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: ["Course"],
+      invalidatesTags: (result, error, id) => [
+        { type: "Course", id },
+        { type: "Course", id: "LIST" },
+      ],
     }),
   }),
 });

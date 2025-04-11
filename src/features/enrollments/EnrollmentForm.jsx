@@ -2,20 +2,29 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import { useEnrollInCourseMutation } from "./enrollmentApiSlice";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const EnrollmentForm = ({ courses }) => {
-  const [enrollInCourse, { isLoading, isError, error, isSuccess }] =
-    useEnrollInCourseMutation();
-  const { user } = useSelector((state) => state.auth); // Get logged-in user info
+  const [enrollInCourse, { isLoading }] = useEnrollInCourseMutation();
+  const { user } = useSelector((state) => state.auth);
 
-  // Formik Setup
   const formik = useFormik({
     initialValues: { courseId: "" },
     validationSchema: Yup.object({
       courseId: Yup.string().required("Please select a course"),
     }),
-    onSubmit: async (values) => {
-      await enrollInCourse({ courseId: values.courseId, userId: user.id });
+    onSubmit: async (values, { resetForm }) => {
+      try {
+        await enrollInCourse({
+          courseId: values.courseId,
+          userId: user.id,
+        }).unwrap();
+
+        toast.success("Successfully enrolled in course!");
+        resetForm();
+      } catch (error) {
+        toast.error(error?.data?.message || "Failed to enroll in course");
+      }
     },
   });
 
@@ -25,34 +34,37 @@ const EnrollmentForm = ({ courses }) => {
         Enroll in a Course
       </h2>
 
-      {isSuccess && <p className="text-green-500">Successfully enrolled!</p>}
-      {isError && (
-        <p className="text-red-500">
-          {error?.data?.message || "Something went wrong"}
-        </p>
-      )}
-
       <form onSubmit={formik.handleSubmit} className="space-y-4">
-        <select
-          name="courseId"
-          value={formik.values.courseId}
-          onChange={formik.handleChange}
-          className="w-full p-2 bg-gray-800 text-yellow-500 rounded-md">
-          <option value="">Select a Course</option>
-          {courses?.map((course) => (
-            <option key={course.id} value={course.id}>
-              {course.name}
-            </option>
-          ))}
-        </select>
-        {formik.errors.courseId && (
-          <p className="text-red-500">{formik.errors.courseId}</p>
-        )}
+        <div>
+          <select
+            id="courseId"
+            name="courseId"
+            value={formik.values.courseId}
+            onChange={formik.handleChange}
+            onBlur={formik.handleBlur}
+            className="w-full p-2 bg-gray-800 text-yellow-500 rounded-md border border-gray-700 focus:border-yellow-500 focus:ring-1 focus:ring-yellow-500">
+            <option value="">Select a Course</option>
+            {courses?.map((course) => (
+              <option key={course.id} value={course.id}>
+                {course.name} - {course.level}
+              </option>
+            ))}
+          </select>
+          {formik.touched.courseId && formik.errors.courseId && (
+            <p className="text-red-500 text-sm mt-1">
+              {formik.errors.courseId}
+            </p>
+          )}
+        </div>
 
         <button
           type="submit"
-          disabled={isLoading}
-          className="w-full bg-yellow-500 text-gray-900 py-2 rounded-md hover:bg-yellow-400">
+          disabled={isLoading || !formik.isValid}
+          className={`w-full py-2 rounded-md transition ${
+            isLoading || !formik.isValid
+              ? "bg-gray-600 cursor-not-allowed"
+              : "bg-yellow-500 text-gray-900 hover:bg-yellow-400"
+          }`}>
           {isLoading ? "Enrolling..." : "Enroll Now"}
         </button>
       </form>

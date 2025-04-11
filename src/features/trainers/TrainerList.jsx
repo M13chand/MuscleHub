@@ -11,7 +11,6 @@ const TrainerList = () => {
   const [deleteTrainer] = useDeleteTrainerMutation();
 
   if (isLoading) return <p>Loading trainers...</p>;
-  // if (error) return <p>Error fetching trainers!</p>;
 
   const handleEdit = (id) => {
     navigate(`/trainers/edit/${id}`);
@@ -31,7 +30,7 @@ const TrainerList = () => {
           <tr className="bg-gray-800 text-yellow-500">
             <th className="p-2">Name</th>
             <th className="p-2">Expertise</th>
-            <th className="p-2">Experience</th>
+            <th className="p-2">Courses</th>
             <th className="p-2">Actions</th>
           </tr>
         </thead>
@@ -40,7 +39,9 @@ const TrainerList = () => {
             <tr key={trainer.id} className="border-b border-gray-700">
               <td className="p-2">{trainer.name}</td>
               <td className="p-2">{trainer.expertise}</td>
-              <td className="p-2">{trainer.experience} years</td>
+              <td className="p-2">
+                {trainer.courses?.map((course) => course.name).join(", ")}
+              </td>
               <td className="p-2">
                 <button
                   className="bg-yellow-500 text-gray-900 px-3 py-1 rounded-lg mr-2"

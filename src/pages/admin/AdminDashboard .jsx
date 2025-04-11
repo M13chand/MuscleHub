@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { logout } from "../../app/authSlice"; // Import logout action
 
 const AdminDashboard = () => {
@@ -10,11 +10,14 @@ const AdminDashboard = () => {
 
   console.log("🔹 AdminDashboard - Full User Object:", user);
 
-  // Redirect non-admin users
-  if (!user?.isAdmin) {
-    navigate("/admin/dashboard");
-    return null;
-  }
+  // Redirect non-admin users to a different page, or show login if no user is logged in
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    } else if (!user?.isAdmin) {
+      navigate("/user/dashboard"); // Redirect non-admins to user dashboard
+    }
+  }, [user, navigate]);
 
   // Handle Logout
   const handleLogout = () => {
@@ -29,24 +32,24 @@ const AdminDashboard = () => {
         <h1 className="text-2xl font-bold text-yellow-500 mb-6">Admin Panel</h1>
         <nav className="space-y-3">
           <NavLink
-            to="users/list"
+            to="users"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
                   ? "bg-yellow-500 text-gray-900"
                   : "bg-gray-700 hover:bg-gray-600"
-              }`
+              } text-white`
             }>
             Users
           </NavLink>
           <NavLink
-            to="trainers"
+            to="trainers/list"
             className={({ isActive }) =>
               `block p-3 rounded-lg ${
                 isActive
                   ? "bg-yellow-500 text-gray-900"
                   : "bg-gray-700 hover:bg-gray-600"
-              }`
+              } text-white`
             }>
             Trainers
           </NavLink>
@@ -57,7 +60,7 @@ const AdminDashboard = () => {
                 isActive
                   ? "bg-yellow-500 text-gray-900"
                   : "bg-gray-700 hover:bg-gray-600"
-              }`
+              } text-white`
             }>
             Courses
           </NavLink>
@@ -68,7 +71,7 @@ const AdminDashboard = () => {
                 isActive
                   ? "bg-yellow-500 text-gray-900"
                   : "bg-gray-700 hover:bg-gray-600"
-              }`
+              } text-white`
             }>
             Enrollments
           </NavLink>

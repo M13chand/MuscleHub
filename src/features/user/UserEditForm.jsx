@@ -1,152 +1,133 @@
-// src/components/users/UserUpdateForm.jsx
-import React, { useEffect, useState } from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
-import * as Yup from "yup";
+import React, { useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import {
   useGetUserByIdQuery,
   useUpdateUserMutation,
 } from "../../features/user/userApiSlice";
+import { toast } from "react-toastify";
 
 const UserEditForm = () => {
-  const { id } = useParams(); // Get the user ID from the URL
+  const { id } = useParams();
   const navigate = useNavigate();
-
-  // Fetch existing user data using Redux Toolkit Query
-  const { data: user, isLoading, error } = useGetUserByIdQuery(id);
+  const { data: user, isLoading, isError } = useGetUserByIdQuery(id);
   const [updateUser] = useUpdateUserMutation();
 
-  const [initialValues, setInitialValues] = useState({
-    username: "",
-    email: "",
-    password: "",
-    isAdmin: false,
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      email: "",
+      isAdmin: false,
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().required("Username is required"),
+      email: Yup.string().email("Invalid email").required("Email is required"),
+    }),
+    onSubmit: async (values) => {
+      try {
+        await updateUser({ id, ...values }).unwrap();
+        toast.success("User updated successfully");
+        navigate("/admin/dashboard/users/list");
+      } catch (error) {
+        toast.error("Failed to update user");
+      }
+    },
+    enableReinitialize: true,
   });
 
-  // Set the initial values once the user data is fetched
   useEffect(() => {
     if (user) {
-      setInitialValues({
-        username: user.username,
-        email: user.email,
-        password: "", // Password should be reset when editing
-        isAdmin: user.isAdmin,
+      formik.setValues({
+        username: user.username || "",
+        email: user.email || "",
+        isAdmin: user.isAdmin || false,
       });
     }
   }, [user]);
 
-  // Yup validation schema for the form
-  const validationSchema = Yup.object({
-    username: Yup.string()
-      .required("Username is required")
-      .min(3, "Username should be at least 3 characters"),
-    email: Yup.string()
-      .email("Invalid email address")
-      .required("Email is required"),
-    password: Yup.string().min(6, "Password should be at least 6 characters"),
-    isAdmin: Yup.boolean(),
-  });
-
-  const handleSubmit = async (values) => {
-    try {
-      // Use the updateUser mutation to send the updated data to the backend
-      await updateUser({ id, ...values }).unwrap();
-      navigate("/users"); // Redirect to the user list after updating
-    } catch (error) {
-      console.error("Error updating user", error);
-    }
-  };
-
-  // Loading and error handling
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching user details.</p>;
+  if (isLoading)
+    return <p className="text-center text-yellow-500">Loading...</p>;
+  if (isError)
+    return (
+      <p className="text-center text-red-500">Failed to load user data.</p>
+    );
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit User</h1>
-      <Formik
-        initialValues={initialValues}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}>
-        <Form>
-          <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block text-sm font-medium text-gray-700">
-              Username
-            </label>
-            <Field
-              type="text"
-              id="username"
-              name="username"
-              className="w-full mt-1 p-2 border border-gray-300 rounded"
-            />
-            <ErrorMessage
-              name="username"
-              component="div"
-              className="text-red-500 text-sm mt-1"
-            />
-          </div>
+    <div className="max-w-lg mx-auto bg-gray-800 text-white p-6 rounded-lg shadow-lg">
+      <h2 className="text-3xl font-semibold text-yellow-500 text-center mb-6">
+        Edit User
+      </h2>
 
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
-            <Field
-              type="email"
-              id="email"
-              name="email"
-              className="w-full mt-1 p-2 border border-gray-300 rounded"
-            />
-            <ErrorMessage
-              name="email"
-              component="div"
-              className="text-red-500 text-sm mt-1"
-            />
-          </div>
+      <form onSubmit={formik.handleSubmit} className="space-y-6">
+        {/* Username Field */}
+        <div>
+          <label
+            htmlFor="username"
+            className="block text-lg font-medium text-yellow-500 mb-2">
+            Username
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            value={formik.values.username}
+            onChange={formik.handleChange}
+          />
+          {formik.errors.username && formik.touched.username && (
+            <div className="text-red-500 text-sm mt-2">
+              {formik.errors.username}
+            </div>
+          )}
+        </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <Field
-              type="password"
-              id="password"
-              name="password"
-              className="w-full mt-1 p-2 border border-gray-300 rounded"
-            />
-            <ErrorMessage
-              name="password"
-              component="div"
-              className="text-red-500 text-sm mt-1"
-            />
-          </div>
+        {/* Email Field */}
+        <div>
+          <label
+            htmlFor="email"
+            className="block text-lg font-medium text-yellow-500 mb-2">
+            Email
+          </label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            className="w-full p-3 border border-gray-600 rounded-lg bg-gray-700 text-white focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            value={formik.values.email}
+            onChange={formik.handleChange}
+          />
+          {formik.errors.email && formik.touched.email && (
+            <div className="text-red-500 text-sm mt-2">
+              {formik.errors.email}
+            </div>
+          )}
+        </div>
 
-          <div className="mb-4">
-            <label
-              htmlFor="isAdmin"
-              className="inline-flex items-center text-sm font-medium text-gray-700">
-              <Field
-                type="checkbox"
-                id="isAdmin"
-                name="isAdmin"
-                className="mr-2"
-              />
-              Admin
-            </label>
-          </div>
+        {/* Is Admin Checkbox */}
+        <div>
+          <label className="block text-lg font-medium text-yellow-500 mb-2">
+            <input
+              type="checkbox"
+              name="isAdmin"
+              checked={formik.values.isAdmin}
+              onChange={formik.handleChange}
+              className="mr-2"
+            />
+            Is Admin
+          </label>
+        </div>
 
+        {/* Submit Button */}
+        <div className="flex justify-center">
           <button
             type="submit"
-            className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600">
-            Edit User
+            className="w-full py-3 bg-yellow-500 text-gray-900 rounded-lg hover:bg-yellow-400 transition duration-300 font-semibold"
+            disabled={formik.isSubmitting}>
+            {formik.isSubmitting ? "Updating..." : "Update User"}
           </button>
-        </Form>
-      </Formik>
+        </div>
+      </form>
     </div>
   );
 };

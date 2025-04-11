@@ -1,54 +1,113 @@
 import React from "react";
+import {
+  useDeleteCourseMutation,
+  useGetCoursesQuery,
+} from "../../features/courses/courseApiSlice";
 import { useNavigate } from "react-router-dom";
-import { useGetCoursesQuery, useDeleteCourseMutation } from "./courseApiSlice";
+import { toast } from "react-toastify";
 
-const CourseList = () => {
-  const navigate = useNavigate();
-  const { data: courses, isLoading, error } = useGetCoursesQuery();
+const CourseList = ({ courses: propCourses, onView, onEdit }) => {
+  // If props are not provided, use the hooks to fetch data
+  const {
+    data: fetchedCourses = [],
+    isLoading,
+    isError,
+  } = useGetCoursesQuery(undefined, {
+    skip: !!propCourses, // Skip the query if courses are provided via props
+  });
   const [deleteCourse] = useDeleteCourseMutation();
+  const navigate = useNavigate();
 
-  if (isLoading) return <p>Loading courses...</p>;
-  // if (error) return <p>Error fetching courses!</p>;
+  // Use provided courses from props or fetched courses
+  const courses = propCourses || fetchedCourses;
 
-  const handleEdit = (id) => {
-    navigate(`/courses/edit/${id}`);
+  // Debug the courses data
+  console.log("Courses data:", courses);
+  console.log("Fetched courses:", fetchedCourses);
+  console.log("Prop courses:", propCourses);
+
+  // Default handlers if not provided via props
+  const defaultHandleView = (id) => {
+    navigate(`/admin/dashboard/courses/${id}`);
   };
+
+  const defaultHandleEdit = (id) => {
+    navigate(`/admin/dashboard/courses/edit/${id}`);
+  };
+
+  // Use provided handlers or defaults
+  const handleViewCourse = onView || defaultHandleView;
+  const handleEditCourse = onEdit || defaultHandleEdit;
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete this course?")) {
-      await deleteCourse(id);
+      try {
+        await deleteCourse(id).unwrap();
+        toast.success("Course deleted successfully");
+      } catch (err) {
+        console.error("Failed to delete course:", err);
+        toast.error(
+          "Failed to delete course: " +
+            (err.data?.message || err.error || "Unknown error")
+        );
+      }
     }
   };
 
+  if (isLoading) {
+    return (
+      <div className="text-yellow-500 text-center py-4">Loading courses...</div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="text-red-500 text-center py-4">
+        Error loading courses.
+      </div>
+    );
+  }
+
+  if (!courses || courses.length === 0) {
+    return (
+      <div className="text-gray-400 text-center py-4">No courses found.</div>
+    );
+  }
+
   return (
-    <div className="p-6 bg-gray-900 min-h-screen text-white">
-      <h2 className="text-2xl font-bold text-yellow-500 mb-4">Course List</h2>
-      <table className="w-full border border-gray-700">
+    <div className="overflow-x-auto bg-gray-800 text-white p-6 rounded-lg shadow-lg">
+      <h2 className="text-2xl font-semibold text-yellow-500 mb-4">
+        Course List
+      </h2>
+      <table className="min-w-full table-auto">
         <thead>
-          <tr className="bg-gray-800 text-yellow-500">
-            <th className="p-2">Name</th>
-            <th className="p-2">Trainer</th>
-            <th className="p-2">Level</th>
-            <th className="p-2">Duration</th>
-            <th className="p-2">Actions</th>
+          <tr className="border-b border-gray-600">
+            <th className="px-4 py-2 text-left text-lg">Course Name</th>
+            <th className="px-4 py-2 text-left text-lg">Trainer</th>
+            <th className="px-4 py-2 text-left text-lg">Actions</th>
           </tr>
         </thead>
         <tbody>
           {courses?.map((course) => (
-            <tr key={course.id} className="border-b border-gray-700">
-              <td className="p-2">{course.name}</td>
-              <td className="p-2">{course.trainer}</td>
-              <td className="p-2">{course.level}</td>
-              <td className="p-2">{course.duration}</td>
-              <td className="p-2">
+            <tr
+              key={course.id || course._id}
+              className="border-b border-gray-600">
+              <td className="px-4 py-2">{course.name}</td>
+              <td className="px-4 py-2">{course.trainer?.name || "N/A"}</td>
+              <td className="px-4 py-2 flex space-x-3">
                 <button
-                  className="bg-yellow-500 text-gray-900 px-3 py-1 rounded-lg mr-2"
-                  onClick={() => handleEdit(course.id)}>
+                  onClick={() => handleViewCourse(course.id || course._id)}
+                  className="text-yellow-500 hover:text-yellow-400">
+                  View
+                </button>
+                <button
+                  onClick={() => handleEditCourse(course.id || course._id)}
+                  className="text-yellow-500 hover:text-yellow-400">
                   Edit
                 </button>
                 <button
-                  className="bg-red-500 text-white px-3 py-1 rounded-lg"
-                  onClick={() => handleDelete(course.id)}>
+                  onClick={() => handleDelete(course.id || course._id)}
+                  className="text-red-500 hover:text-red-400">
                   Delete
                 </button>
               </td>

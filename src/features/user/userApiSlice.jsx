@@ -4,6 +4,13 @@ export const userApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAllUsers: builder.query({
       query: () => "users", // /users endpoint will be appended to baseUrl
+      transformResponse: (response) => {
+        // Transform the response to add id field for consistency
+        return response.map((user) => ({
+          ...user,
+          id: user.id || user._id, // Ensure id field exists alongside _id
+        }));
+      },
       providesTags: (result) => (result ? [{ type: "User", id: "LIST" }] : []), // Cache list of users with a 'LIST' tag
     }),
     getUserById: builder.query({
@@ -18,10 +25,10 @@ export const userApiSlice = apiSlice.injectEndpoints({
         method: "PUT",
         body: userData,
       }),
-      // Invalidate the cache of the user being updated and the user list
+      // Invalidate only the updated user (not the entire list)
       invalidatesTags: (result, error, { id }) => [
-        { type: "User", id },
-        { type: "User", id: "LIST" },
+        { type: "User", id }, // Invalidate the specific user by ID
+        { type: "User", id: "LIST" }, // Optionally invalidate the list to keep it fresh
       ],
     }),
     deleteUser: builder.mutation({
